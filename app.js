@@ -48,9 +48,11 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use(mongoSanitize());
 
+const secret= process.env.SECRET || 'thisshouldbeabettersecret!';
+
 const store=new MongoStore({
     url:dbUrl,
-    secret:'thisshouldbeabettersecret!',
+    secret,
     touchAfter: 24*60*60
 })
 
@@ -61,7 +63,7 @@ store.on("error",function(e)
 
 const sessionConfig={
     store,
-    secret:'thisshouldbeabettersecret!',
+    secret,
     resave:false,
     saveUninitialized:false,
     cookie:{
@@ -113,6 +115,7 @@ app.use((err,req,res,next)=>{
     res.status(statusCode).render('error',{err});
 })
 
-app.listen(3000,()=>{
-    console.log('APP IS LISTENING AT PORT 3000!')
+const port= process.env.PORT || 3000;
+app.listen(port,()=>{
+    console.log(`APP IS LISTENING AT PORT ${port}!`)
 })
